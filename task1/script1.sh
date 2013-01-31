@@ -12,15 +12,43 @@ do
 	fi
 done
 
+enumLines()
+{
+  index=1
+  while read line
+  do 
+     echo "	$index: $line"
+     let index=$index+1
+  done
+}
+
+getByNum()
+{
+  flag=0
+  required=$1
+  index=1
+  while read line
+  do
+     if [ $index == $required ]
+     then
+        flag=1
+        filename=$line
+        head -10 "$filename"
+     fi
+     let index=$index+1 
+  done
+  if [ $flag == 0 ]
+  then
+     echo "Bad number"
+  fi
+}
+
 while [ "$command" != "q" ]
 do
 	echo "List of text files in current dir:"
 	
-	array=($(find . -name "*.txt" -d 1 -print))
-	size=${#array[@]}
-	
-	echo ${array[@]} | tr ' ' '\n' | nl
-	
+       ls | grep ".txt$" | enumLines
+
 	echo "Enter 'q' to quit"
 	echo "Enter number of file to show it"
 	
@@ -28,13 +56,7 @@ do
 	
 	if [[ "$command" =~ ^[0-9]+$ ]]
 	then
-   		if [ "$command" -gt 0 ] && [ "$command" -le $size ]
-		then
-			let index=$command-1
-			head -10 ${array[$index]}
-		else
-			echo "Bad number"
-		fi
+   		ls | grep ".txt$" | getByNum $command
 	else
 		if [ "$command" != "q" ]
 		then 
